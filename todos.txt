@@ -1,0 +1,10 @@
+Convert services to clean arch 
+validate errors diffrently
+check permissions
+
+
+
+
+Add complains module 
+Try to use redis as cache in vote_service 
+
