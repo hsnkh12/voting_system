@@ -27,6 +27,10 @@ static define = (db) => {
       model: 'Elections', // Reference the Election model
       key: 'election_id', // Election's primary key column
     },
+    date_added: {
+      type: DataTypes.DATE,
+      allowNull: false
+    }
 
   },
   message: {

@@ -3,6 +3,7 @@ const app = express()
 const usersRouter = require("./routes/users.routes")
 const candidatesRouter = require("./routes/candidates.routes")
 const electionsRouter = require("./routes/elections.routes")
+const complainsRouter = require("./routes/complains.routes")
 const cors = require("cors")
 
 
@@ -14,6 +15,6 @@ app.use(cors({
 app.use("/users", usersRouter)
 app.use("/elections", electionsRouter)
 app.use("/candidates", candidatesRouter)
-
+app.use("/complains", complainsRouter)
 
 module.exports = app

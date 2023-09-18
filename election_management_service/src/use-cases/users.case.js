@@ -1,4 +1,4 @@
-const {PasswordManager} = require("../core/utils/password")
+const {PasswordManager} = require("../adapter/utils/password")
 
 
 module.exports = class UsersUseCase{

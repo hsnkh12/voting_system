@@ -44,7 +44,7 @@ electionsController.endElection)
 
 
 // Add candidate to election: admin
-router.post("/add/:election_id",
+router.post("/candidates/add/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
@@ -53,7 +53,7 @@ electionsToCandsController.addCandidate
 
 
 // remove candidate from election: admin
-router.post("/remove/:election_id",
+router.post("/candidates/remove/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
@@ -74,7 +74,7 @@ verifyUserMiddleware,
 electionsController.getOneElectionById)
 
 // Read all candidates in an election: admin, user
-router.get("/:election_id/candidates",
+router.get("/candidates/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 electionsToCandsController.getAllCandidates)

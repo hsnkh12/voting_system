@@ -1,4 +1,4 @@
-const {PasswordManager} = require("../core/utils/password")
+const {PasswordManager} = require("../adapter/utils/password")
 const jwt = require("jsonwebtoken")
 const { Op } = require('sequelize');
 

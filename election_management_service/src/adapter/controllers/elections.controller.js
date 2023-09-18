@@ -246,6 +246,8 @@ module.exports = class ElectionsController{
 
             await this.electionsUseCase.destroyElection(election_id)
 
+            // send a request to delete all votes in this election 
+
             return res.send(true)
 
         } catch(err){
