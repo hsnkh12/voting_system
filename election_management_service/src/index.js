@@ -1,4 +1,4 @@
-const expressApp = require("./frameworks/web/express");
+const expressApp = require("./frameworks/web/express.server");
 const db = require("./frameworks/db/sequelize.db");
 const initModels = require("./core/models/init.model");
 require("dotenv").config();
