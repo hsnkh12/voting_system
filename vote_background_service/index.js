@@ -1,10 +1,10 @@
 const dotenv = require('dotenv');
 const amqp = require('amqplib');
-const RabbitMQ = require("./modules/rabbitmq/rabbitmq.config")
+const RabbitMQ = require("./src/rabbitmq/rabbitmq.config")
 dotenv.config();
 const rabbitMQ = new RabbitMQ()
-const {submitVote} = require("./modules/tasks/votes.task")
-const {generateResult} = require("./modules/tasks/results.task")
+const {submitVote} = require("./src/tasks/votes.task")
+const {generateResult} = require("./src/tasks/results.task")
 
 async function bootstrap() {
 
