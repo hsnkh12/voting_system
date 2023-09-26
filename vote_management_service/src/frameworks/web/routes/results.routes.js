@@ -18,22 +18,24 @@ const resultsController = new ResultsController(resultsUseCase)
 
 
 // Generate result. admin
-router.post("/:election_id",
+router.post("/election/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
 resultsController.generateResult)
 
+// Get all results, admin 
+router.get("/")
 
-// Get results. user, admin 
-router.get("/:election_id",
+// Get one result. user, admin 
+router.get("/election/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 resultsController.getOneResult)
 
 
 // Delete result. admin, election_service
-router.delete("/:election_id",
+router.delete("election/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,

@@ -10,7 +10,7 @@ module.exports = class ResultsUseCase {
 
     async publishResult(election_id){
 
-        await this.resultsRepo.publishMessageToQueue({election_id},"generate-result")
+        await this.resultsPublisher.publishMessageToQueue({election_id},"generate-result")
 
         return true
     }

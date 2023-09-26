@@ -13,6 +13,12 @@ static define = (db) => {
       primaryKey: true,
       allowNull: false,
     },
+
+    election_id : {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    
     candidate_name: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -21,7 +27,7 @@ static define = (db) => {
       type: DataTypes.STRING(50),
       allowNull: false,
       references: {
-        model: Vote,   
+        model: Vote.model,   
         key: 'vote_id',     
       },
     },

@@ -1,4 +1,4 @@
-const {createNewConnection} = require("../db/db.config")
+const {createNewConnection} = require("../db/db")
 const uuid = require("uuid")
 
 
@@ -28,8 +28,8 @@ const submitVote = async (kwargs) => {
       [vote_id, kwargs.user_id, kwargs.election_id, elec_to_cands.length, currentDate, currentDate, currentDate]);
 
       for( election_to_candidate of elec_to_cands){
-        await connection.execute('INSERT INTO VoteToCandidates(candidate_name,vote_id,election_to_candidate_id,createdAt,updatedAt) VALUES(?,?,?,?,?);',
-        [election_to_candidate[1], vote_id, election_to_candidate[0], currentDate, currentDate])
+        await connection.execute('INSERT INTO VoteToCandidates(candidate_name,vote_id,election_to_candidate_id,createdAt,updatedAt, election_id) VALUES(?,?,?,?,?,?);',
+        [election_to_candidate[1], vote_id, election_to_candidate[0], currentDate, currentDate, kwargs.election_id])
       }
       await connection.commit();
   

@@ -41,7 +41,7 @@ module.exports = class VotesUseCase {
         }
 
         await this.votesPublisher.publishMessageToQueue(publishPayload, "submit-vote")
-        await this.resultsPublisher.publishMessageToQueue({election_id : kwargs.election_id})
+        // await this.resultsPublisher.publishMessageToQueue({election_id : kwargs.election_id})
 
         return response.data 
     }

@@ -1,5 +1,4 @@
 const dotenv = require('dotenv');
-const amqp = require('amqplib');
 const RabbitMQ = require("./src/rabbitmq/rabbitmq.config")
 dotenv.config();
 const rabbitMQ = new RabbitMQ()

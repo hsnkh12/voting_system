@@ -9,15 +9,15 @@ static define = (db) => {
       type: DataTypes.STRING(50),
       allowNull: false,
     },
-    first_id: {
+    first_candidate_name: {
       type: DataTypes.STRING(50),
       allowNull: true,
     },
-    second_id: {
+    second_candidate_name: {
       type: DataTypes.STRING(50),
       allowNull: true
     },
-    third_id: {
+    third_candidate_name: {
       type: DataTypes.STRING(50),
       allowNull: true
     },

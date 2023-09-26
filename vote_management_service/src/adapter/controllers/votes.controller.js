@@ -76,6 +76,27 @@ module.exports = class VotesController {
         }
     }
 
+    getAllVoteToCandidate = async (req, res) => {
+
+        try{
+
+        } catch(err) {
+
+            if (err.name == "VOTE_CASE_ERROR"){
+                return res.status(err.status).json({ 
+                    message : err.message
+                })
+            }
+
+            console.log(err)
+
+            return res.status(500).json({
+                message: "Internal server error"
+            })
+
+        }
+    }
+
     getAllVotes = async (req, res) => {
 
         try{

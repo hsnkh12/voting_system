@@ -48,7 +48,6 @@ module.exports = class ElectionsUseCase{
         }
 
         const [record, created] = await this.electionToCandsRepo.findOrCreate({electionToCandClause, transaction})
-
         if (created == true){
             election.no_of_candidates = election.no_of_candidates + 1
             await this.electionsRepo.save({election, transaction})

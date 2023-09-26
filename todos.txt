@@ -1,12 +1,9 @@
-
-validate errors diffrently
 check permissions
 
 
 To add before the meeting 
 - increase no of candidate in election on add 
-- generate result 
-- add find votes to candidate endpoint
+- add more endpoints for vote_management_service 
  
 Features to add 
 - Forget password endpoint
@@ -14,6 +11,7 @@ Features to add
 - send sms api 
 - user update profile info 
 - user change phone number 
+- check permissions
 
 
 
