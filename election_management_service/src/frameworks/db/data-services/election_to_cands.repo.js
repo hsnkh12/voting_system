@@ -17,6 +17,10 @@ module.exports = class ElectionToCandsRepository{
 
     }
 
+    async findOne(clause){
+        return await ElectionToCandidate.model.findOne(clause)
+    }
+
     async destroy(kwargs){
         return await ElectionToCandidate.model.destroy(kwargs.electionToCandClause, {transaction: kwargs.transaction})
     }

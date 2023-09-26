@@ -20,15 +20,17 @@ module.exports = class VotesController {
                 })
             }
 
-            await this.votesUseCase.publishVote({election_id, candidates, headers: req.headers})
+            const resp = await this.votesUseCase.publishVote({election_id, candidates, headers: req.headers, user_id: req.user_id})
 
-            return res.send(true) 
+            return res.send(resp) 
 
         } catch(err){
 
+
             if (err.name == "AxiosError"){
+                console.log(err)
                 return res.status(400).json({
-                    message: "Invalid submission"
+                    message: err.response.data.message
                 })
             }
 
@@ -99,5 +101,9 @@ module.exports = class VotesController {
             })
             
         }
+    }
+
+    deleteAllVotes = async (req, res) => {
+        
     }
 }

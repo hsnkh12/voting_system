@@ -17,13 +17,33 @@ module.exports = class VotesUseCase {
             'Content-Type': 'application/json'
           };
 
-        const url = "http://"+process.env.ELECTION_MANAGEMENT_SERVICE_HOST+":"+process.env.ELECTION_MANAGEMENT_SERVICE_PORT+"/elections/init-vote-request"
-        const response = await axios.post(url, { election_id, candidates}, {headers});
+        const body = {
+            election_id : kwargs.election_id,
+            candidates: kwargs.candidates
+        }
 
-        await this.votesPublisher.publishMessageToQueue(response.data, "submit-vote")
+        const vote = await this.votesRepo.findOne({
+            where: {user_id: kwargs.user_id, election_id: kwargs.election_id},
+            attributes: ["vote_id"]
+        })
+
+        if (vote){
+            return this.throwError("User can only vote once on each election", 400)
+        }
+
+        const url = "http://"+process.env.ELECTION_MANAGEMENT_SERVICE_HOST+":"+process.env.ELECTION_MANAGEMENT_SERVICE_PORT+"/elections/init-vote-request"
+        const response = await axios.post(url, body, {headers});
+
+        const publishPayload = {
+            election_to_candidates : response.data, 
+            user_id: kwargs.user_id, 
+            election_id:kwargs.election_id 
+        }
+
+        await this.votesPublisher.publishMessageToQueue(publishPayload, "submit-vote")
         await this.resultsPublisher.publishMessageToQueue({election_id : kwargs.election_id})
 
-        return true
+        return response.data 
     }
 
     async findOneVote(vote_id){

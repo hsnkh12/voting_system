@@ -119,6 +119,45 @@ module.exports = class ElectionsUseCase{
 
     }
 
+    async validateVote(kwargs){
+
+        const resp = []
+
+        const election = await this.electionsRepo.findOne({
+            where: {election_id: kwargs.election_id},
+            attributes: ["election_id","no_of_votes_allowed_per_user", "status"]
+        })
+
+        if (!election){
+            return this.throwError("Election is not found", 404)
+        }
+
+        if(election.status != "S"){
+            return this.throwError("Election should be in start status", 400)
+        }
+
+        if (election.no_of_votes_allowed_per_user < kwargs.candidates.length){
+            return this.throwError("Exceded allowed number of votes per user", 400)
+        } 
+
+        for (const candidate_id of kwargs.candidates){
+
+            const elec_to_cand = await this.electionToCandsRepo.findOne({
+                where: {candidate_id:candidate_id, election_id: election.election_id},
+                attributes: ["id","candidate_name"]
+            })
+
+            if (!elec_to_cand){
+                return this.throwError("Candidate with id '"+candidate_id+"' is not found in this election", 404)
+            }
+
+            resp.push([elec_to_cand.id, elec_to_cand.candidate_name])
+        }
+
+        return resp
+
+    }
+
 
     throwError(message, status){
 

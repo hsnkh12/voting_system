@@ -102,10 +102,10 @@ verifyAdminMiddleware,
 electionsController.destroyElection)
 
 
-// router.post("/init-vote-request",
-// verifyTokenMiddleware,
-// verifyUserMiddleware,
-// electionsController.initVoteRequest)
+router.post("/init-vote-request",
+verifyTokenMiddleware,
+verifyUserMiddleware,
+electionsToCandsController.initVote)
 
 
 module.exports = router

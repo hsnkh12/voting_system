@@ -1,10 +1,23 @@
-Convert services to clean arch 
+
 validate errors diffrently
 check permissions
 
 
+To add before the meeting 
+- increase no of candidate in election on add 
+- generate result 
+- add find votes to candidate endpoint
+ 
+Features to add 
+- Forget password endpoint
+- Verify face id on vote and signup 
+- send sms api 
+- user update profile info 
+- user change phone number 
 
 
-Add complains module 
-Try to use redis as cache in vote_service 
+
+
+
+
 

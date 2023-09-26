@@ -51,8 +51,6 @@ module.exports = class ElectionToCandsController{
 
             await this.electionsToCandsUseCase.remove({election_id, candidate_id})
 
-            // send a request to delete all votes related to this candidate in this election
-
             return res.send(true)
 
         } catch(err){
@@ -97,49 +95,37 @@ module.exports = class ElectionToCandsController{
         }
     }
 
+
+    initVote  = async (req, res) => {
+
+        try{
+            const {election_id, candidates } = req.body 
+
+            if (!election_id || !candidates){
+                return this.electionsToCandsUseCase.throwError("election_id and candidates fields are required", 400)
+            }
+
+            const resp = await this.electionsToCandsUseCase.validateVote({election_id, candidates})
+
+            return res.json(resp)
+
+        } catch(err) {
+
+            if (err.name == "ELECTION_CANDIDATE_CASE_ERROR"){
+                return res.status(err.status).json({ 
+                    message : err.message
+                })
+            }
+
+            console.log(err)
+
+            return res.status(500).json({ 
+                message: "Internal server error" 
+            });
+            
+
+        }
+    }
+
     
 }
-
-
-// const initiateVoteRequest = async (req, res) => {
-
-//     try{
-//         const { election_id, candidates} = req.body 
-//         const resp = []
-
-//         const election = await Election.findOne({
-//             where:{ election_id, status: "S"},
-//             attributes: ["election_id","no_of_votes_allowed_per_user"]
-//         })
-
-//         if (!election){
-//             return res.sendStatus(404)
-//         }
-
-//         if (election.no_of_votes_allowed_per_user < candidates.length){
-//             return res.sendStatus(400)
-//         }
-
-//         for (const candidate_id of candidates){
-
-//             const elec_to_cand = await ElectionToCandidate.findOne({
-//                 where: {id:candidate_id},
-//                 attributes: ["id","candidate_name"]
-//             })
-
-//             if (!elec_to_cand){
-//                 return res.sendStatus(404)
-//             }
-
-//             resp.push([elec_to_cand.id, elec_to_cand.candidate_name])
-//         }
-
-//         return res.status(200).json({user_id: req.user_id, election_id, election_to_candidates: resp})
-
-//     } catch(err){
-//         console.log(err)
-//         return res.status(500).json({ 
-//             message: "Internal server error" 
-//         });
-//     }
-// }
