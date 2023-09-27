@@ -11,11 +11,13 @@ const VotesUseCase = require("../../../use-cases/votes.case")
 const VotesRepository = require("../../db/data-services/votes.repo")
 const VotesPublisher = require("../../rabbitmq/pubs/votes.pub.js")
 const ResultsPublisher = require("../../rabbitmq/pubs/results.pub")
+const VoteToCandidateRepo = require("../../db/data-services/votes_to_candidates.repo") 
 
+const voteToCandidateRepo = new VoteToCandidateRepo()
 const votesRepo = new VotesRepository()
 const votesPublisher = new VotesPublisher()
 const resultsPublisher = new ResultsPublisher()
-const votesUseCase = new VotesUseCase(votesRepo, votesPublisher, resultsPublisher)
+const votesUseCase = new VotesUseCase(votesRepo, votesPublisher, resultsPublisher,voteToCandidateRepo)
 const votesController = new VotesController(votesUseCase)
 
 // Submit vote, user
@@ -27,8 +29,12 @@ votesController.submitVote
 
 
 // Get all votes for election, admin 
-router.get("/election/:election_id")
-
+router.get("/election/:election_id",
+verifyTokenMiddleware,
+verifyUserMiddleware,
+verifyAdminMiddleware,
+votesController.getAllVoteToCandidate
+)
 
 // Get one vote submission , admin
 router.get("/submissions/:vote_id",

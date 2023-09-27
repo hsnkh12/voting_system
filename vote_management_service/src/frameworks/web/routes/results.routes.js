@@ -24,9 +24,6 @@ verifyUserMiddleware,
 verifyAdminMiddleware,
 resultsController.generateResult)
 
-// Get all results, admin 
-router.get("/")
-
 // Get one result. user, admin 
 router.get("/election/:election_id",
 verifyTokenMiddleware,

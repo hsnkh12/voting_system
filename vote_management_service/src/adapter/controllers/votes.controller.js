@@ -124,6 +124,34 @@ module.exports = class VotesController {
         }
     }
 
+
+    getAllVoteToCandidates = async (req, res) => {
+
+        try{
+
+            const election_id = req.params.election_id
+
+            const votes = await this.votesUseCase.findAllVoteToCandidates(election_id)
+
+            return res.json(votes)
+
+        } catch(err) {
+
+            if (err.name == "VOTE_CASE_ERROR"){
+                return res.status(err.status).json({ 
+                    message : err.message
+                })
+            }
+
+            console.log(err)
+
+            return res.status(500).json({
+                message: "Internal server error"
+            })
+
+        }
+    }
+
     deleteAllVotes = async (req, res) => {
         
     }

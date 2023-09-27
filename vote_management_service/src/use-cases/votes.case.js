@@ -3,10 +3,11 @@ const axios = require("axios")
 
 module.exports = class VotesUseCase {
 
-    constructor(votesRepo, votesPublisher, resultsPublisher){
+    constructor(votesRepo, votesPublisher, resultsPublisher, voteToCandidateRepo){
         this.votesRepo = votesRepo
         this.votesPublisher =votesPublisher 
         this.resultsPublisher = resultsPublisher
+        this.voteToCandidateRepo = voteToCandidateRepo
     }
 
 
@@ -61,6 +62,12 @@ module.exports = class VotesUseCase {
 
         const votes = await this.votesRepo.find({where: {election_id}})
 
+        return votes
+    }
+
+    async findAllVoteToCandidates(election_id){
+
+        const votes = await this.voteToCandidateRepo.find({where : {election_id}})
         return votes
     }
 
