@@ -122,8 +122,36 @@ class UserSMSVerifyBody{
     }
 }
 
-
 class UserResetPasswordBody{
+
+    constructor(new_password, confirmed_password){
+        this.new_password = new_password
+        this.confirmed_password = confirmed_password
+    }
+
+    validate(){
+        var err = new Error()
+        err.name = 'BODY_VALIDATION_ERROR'
+
+        if(!this.new_password){
+            err.message = "new_password field is missing"
+            throw err
+        }
+        if(!this.confirmed_password){
+            err.message = "confirmed_password field is missing"
+            throw err 
+        }
+        if(this.new_password != this.confirmed_password){
+            err.message = "Passwords do not match"
+            throw err
+        }
+
+        err = null 
+        return true 
+    }
+}
+
+class UserUpdatePasswordBody{
 
     constructor(current_password, new_password){
         this.current_password = current_password
@@ -148,6 +176,27 @@ class UserResetPasswordBody{
 
         error = null
 
+        return true
+    }
+}
+
+
+class UserEmailBody{
+
+    constructor(email){
+        this.email = email
+    }
+
+    validate(){
+        var err = new Error()
+        err.name = "BODY_VALIDATION_ERROR"
+
+        if(!this.email){
+            err.message = "email field is missing"
+            throw err
+        }
+
+        err = null 
         return true
     }
 }
@@ -218,6 +267,8 @@ module.exports = {
     UserSignupBody,
     UserSigninBody,
     UserFilterQuery,
+    UserUpdatePasswordBody,
+    UserSMSVerifyBody ,
     UserResetPasswordBody,
-    UserSMSVerifyBody 
+    UserEmailBody
 }

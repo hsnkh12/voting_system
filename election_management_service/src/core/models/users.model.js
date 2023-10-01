@@ -31,6 +31,11 @@ class User{
       unique: true,
       allowNull: false,
     },
+    renew_phone_number: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      defaultValue: null,
+    },
     password: {
       type: DataTypes.STRING(100),
       allowNull: false,

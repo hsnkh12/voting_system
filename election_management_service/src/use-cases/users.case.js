@@ -1,12 +1,29 @@
 const {PasswordManager} = require("../adapter/utils/password")
-
+const jwt = require("jsonwebtoken")
 
 module.exports = class UsersUseCase{
 
-    constructor(UsersRepo){
+    constructor(UsersRepo, emailUseCase){
         this.UsersRepo =UsersRepo 
+        this.emailUseCase = emailUseCase
+        this.JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
     }   
 
+
+    async signJWTOnSignin(user_id){
+
+        const user = await this.UsersRepo.findOne({where:{user_id}, attributes:["user_id", "is_admin", "face_id_verified"]})
+
+        if (!user){
+            return this.throwError("User with this id is not found",404)
+        }
+
+        const user_to_enc = {user_id: user.user_id, is_admin: user.is_admin, face_id_verified: user.face_id_verified};
+
+        const token = await jwt.sign({user_to_enc}, this.JWT_SECRET_KEY, {expiresIn: '30m'})
+
+        return {token}
+    }
 
     async createUser(kwargs){
 
@@ -26,7 +43,7 @@ module.exports = class UsersUseCase{
 
         const user = await this.UsersRepo.findOne({
             where:{email: kwargs.email},
-            attributes: ["user_id", "email", "password"]
+            attributes: ["user_id", "email", "password", "phone_number"]
         })
 
         if(!user){
@@ -41,6 +58,27 @@ module.exports = class UsersUseCase{
 
         return {user_id:user.user_id}
 
+    }
+
+    async renewPhoneNumber({user_id, new_phone_number=null, renew=false}){
+
+        const user = await this.UsersRepo.findOne({where: {user_id}, attributes: ["user_id","renew_phone_number", "phone_number"]})
+
+        if(!user){
+            return this.throwError("User with id is not found")
+        }
+
+        if(renew ){
+            if(user.renew_phone_number == null){
+                return this.throwError("New phone number is not defined", 400)
+            }
+            user.phone_number =user.renew_phone_number 
+            user.renew_phone_number = null
+        } else {
+            user.renew_phone_number = new_phone_number
+        }
+
+        await this.UsersRepo.save(user)
     }
 
     async findAllUsers(query){
@@ -97,7 +135,7 @@ module.exports = class UsersUseCase{
 
     async updateUser(kwargs){
 
-        const attrs = ["username", "email", "first_name","last_name","phone_number"] 
+        const attrs = ["username", "email", "first_name","last_name"] 
 
         const clause = {
             where: {user_id:kwargs.user_id},
@@ -156,6 +194,104 @@ module.exports = class UsersUseCase{
         }
 
         user.password = await PasswordManager.hashPassword(kwargs.new_password)
+
+        await this.UsersRepo.save(user)
+
+        return true
+
+    }
+
+
+    async sendDeleteAccountToken(user_id){
+
+        const user = await this.UsersRepo.findOne({where:{user_id}, attributes: ['user_id','email']})
+
+        if(!user){
+            return this.throwError("User with this id is not found")
+        }
+
+        const token = jwt.sign({ user_id_delete_account: user.user_id, delete_account: true }, this.JWT_SECRET_KEY, { expiresIn: '10m' });
+
+        const deleteLink = `http://localhost:${process.env.APP_PORT}/users/delete-account?token=${token}`;
+
+        await this.emailUseCase.sendEmail({to: user.email, message: deleteLink, title: "Delete account"})
+
+        return true
+
+    }
+
+
+    async validateDeleteAccountToken(token){
+
+        try{
+            const decodedToken = jwt.verify(token, this.JWT_SECRET_KEY);
+            if(!decodedToken.user_id_delete_account || !decodedToken.delete_account){
+                return this.throwError("Invalid delete account token",403)
+            }
+
+            return decodedToken.user_id_password
+        } catch(err){
+            return this.throwError("Invalid delete account token", 403)
+        }
+
+    }
+
+    async deleteUserAccount(user_id){
+
+        const user = await this.UsersRepo.findOne({where: {user_id}})
+
+        if(!user){
+            return this.throwError("User with this id is not found")
+        }
+
+        await this.UsersRepo.destroy({where: {user_id}})
+        return true
+    }
+
+    async sendPasswordToken(email){
+
+        const user = await this.UsersRepo.findOne({where : {email}, attributes:["user_id","email"]})
+
+        if (!user){
+            return this.throwError("User with this email is not found", 404)
+        }
+
+        const token = jwt.sign({ user_id: user.user_id_password, reset_password: true }, this.JWT_SECRET_KEY, { expiresIn: '10m' });
+
+        const resetLink = `http://localhost:${process.env.APP_PORT}/users/reset-password?token=${token}`;
+
+        await this.emailUseCase.sendEmail({to: user.email, message: resetLink, title: "Reset password"})
+
+        return true 
+    }
+
+
+    async validatePasswordToken(token){
+
+        try{
+            const decodedToken = jwt.verify(token, this.JWT_SECRET_KEY);
+
+            if(!decodedToken.user_id_password || !decodedToken.reset_password){
+                return this.throwError("Invalid password token",403)
+            }
+
+            return decodedToken.user_id_password
+        } catch(err){
+            return this.throwError("Invalid password token", 403)
+        }
+
+    }
+
+
+    async resetPassword({user_id, new_password}){
+
+        const user = await this.UsersRepo.findOne({where: {user_id}})
+
+        if(!user){
+            return this.throwError("User with this id is not found",404)
+        }
+
+        user.password = await PasswordManager.hashPassword(new_password)
 
         await this.UsersRepo.save(user)
 

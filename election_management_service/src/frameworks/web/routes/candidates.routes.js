@@ -28,10 +28,11 @@ verifyAdminMiddleware,
 candidatesController.getAllCandidates
 )
 
-// Get on candidate info: admin, user
+// Get on candidate info: admin
 router.get("/:candidate_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
+verifyAdminMiddleware,
 candidatesController.getOneCandidatebyId)
 
 // Get on candidate info: admin, user

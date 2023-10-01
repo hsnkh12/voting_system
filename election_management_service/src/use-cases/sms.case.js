@@ -11,7 +11,7 @@ module.exports = class SMSUseCase{
     }
 
 
-    async sendSMSCode(user_id){
+    async sendSMSCode({user_id, phone_numner}){
 
         const currentDate = new Date();
         const exp_date = new Date(currentDate.getTime() + 300_000);
@@ -68,25 +68,7 @@ module.exports = class SMSUseCase{
             where: {sms_user_code_id: smsUserCode.sms_user_code_id}
         })
         
-        const user = await this.usersRepo.findOne({ 
-            where : {
-                user_id : kwargs.user_id
-            },
-            attributes: ["user_id", "is_admin", "face_id_verified", "last_login"]
-        })
-
-        if(!user){
-           return this.throwError("User not found", 404) 
-        }
-
-        user.last_login = new Date()
-        await this.usersRepo.save(user)
-
-        const user_to_enc = {user_id: user.user_id, is_admin: user.is_admin, face_id_verified:user.face_id_verified};
-
-        const token = await jwt.sign({user_to_enc}, process.env.JWT_SECRET_KEY, {expiresIn: '30m'})
-
-        return {token}
+        return true 
 
     }
 

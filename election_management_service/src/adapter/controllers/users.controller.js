@@ -1,4 +1,4 @@
-const {UserSignupBody, UserSigninBody, UserFilterQuery, UserResetPasswordBody, UserSMSVerifyBody} = require("../../core/validators/user.val")
+const {UserSignupBody, UserSigninBody, UserFilterQuery, UserEmailBody, UserUpdatePasswordBody, UserSMSVerifyBody,UserResetPasswordBody} = require("../../core/validators/user.val")
 
 
 module.exports = class UsersController{
@@ -23,7 +23,7 @@ module.exports = class UsersController{
 
             const user = await this.usersUseCase.createUser({username, email, first_name, last_name, phone_number, password})
 
-            await this.smsUseCase.sendSMSCode(user.user_id)
+            await this.smsUseCase.sendSMSCode({user_id: user.user_id, phone_number: user.phone_number})
 
             return res.status(201).json(user)
 
@@ -67,7 +67,7 @@ module.exports = class UsersController{
 
             const user = await this.usersUseCase.validateUser({email, password})
 
-            await this.smsUseCase.sendSMSCode(user.user_id)
+            await this.smsUseCase.sendSMSCode({user: user.user_id, phone_number: user.phone_number})
 
             return res.status(200).json(user)
 
@@ -252,12 +252,12 @@ module.exports = class UsersController{
         }
     }
 
-    resetPassword = async (req, res) => {
+    updatePassword = async (req, res) => {
         try{
 
             const user_id = req.user_id
             const {current_password, new_password} = req.body
-            const validator = new UserResetPasswordBody(current_password, new_password)
+            const validator = new UserUpdatePasswordBody(current_password, new_password)
             validator.validate()
 
             await this.usersUseCase.updatePassword({user_id, current_password, new_password})
@@ -297,14 +297,16 @@ module.exports = class UsersController{
         }
     }
 
-    verifySMSCode = async (req, res) => {
+    verifySMSCodeOnSingIn = async (req, res) => {
         try{
 
             const {user_id, code} = req.body
             const validator = new UserSMSVerifyBody(user_id, code)
             validator.validate()
 
-            const response = await this.smsUseCase.verifySMSCode({user_id, code})
+            await this.smsUseCase.verifySMSCode({user_id, code})
+
+            const response = await this.usersUseCase.signJWTOnSignin(user_id)
 
             return res.json(response)
 
@@ -328,6 +330,220 @@ module.exports = class UsersController{
                 })
             }
             
+            console.log(err)
+            return res.status(500).send({ message: "Internal server error" });
+
+        }
+    }
+
+
+    resetPasswordRequest = async (req, res) => {
+
+        try{
+
+            const {email} = req.body
+            const validator = new UserEmailBody(email)
+            validator.validate()
+
+            const response = await this.usersUseCase.sendPasswordToken(validator.email)
+
+            return res.json(response)
+
+        } catch (err){
+
+            if (err.name == "BODY_VALIDATION_ERROR"){
+                return res.status(400).json({ 
+                    message : err.message
+                })
+            }
+
+            if (err.name == "USER_USE_CASE_ERROR"){
+                return res.status(err.status).json({
+                    message: err.message 
+                })
+            }
+
+            if (err.name == "EMAIL_CASE_ERROR"){
+                return res.status(err.status).json({
+                    message: err.message 
+                })
+            }
+            
+            console.log(err)
+            return res.status(500).send({ message: "Internal server error" });
+
+        }
+    }
+
+
+    changePhoneNumberRequest = async (req, res) => {
+
+        try{
+
+            const {new_phone_number} = req.body
+            const user_id = req.user_id 
+
+            if(!new_phone_number){
+                return this.usersUseCase.throwError("new_phone_number field is missing",400)
+            }
+
+            await this.smsUseCase.sendSMSCode({user_id, phone_number:new_phone_number})
+            await this.usersUseCase.renewPhoneNumber({user_id, new_phone_number, renew:false})
+
+            return res.send(true)
+
+        } catch(err){
+
+            if (err.name == "USER_USE_CASE_ERROR"){
+                return res.status(err.status).json({
+                    message: err.message 
+                })
+            }
+
+            if (err.name == "SMS_CASE_ERROR"){
+                return res.status(err.status).json({ 
+                    message : err.message
+                })
+            }
+            
+            console.log(err)
+            return res.status(500).send({ message: "Internal server error" });
+
+        }
+    }
+
+    changePhoneNumber = async (req, res) =>{
+
+        try{
+
+            const {code} = req.body 
+            const user_id = req.user_id
+
+            if(!code){
+                return this.usersUseCase.throwError("code field is missing", 400)
+            }
+
+            await this.smsUseCase.verifySMSCode({user_id, code})
+            await this.usersUseCase.renewPhoneNumber({user_id, renew: true})
+
+            return res.send(true)
+
+        } catch(err){
+
+            if (err.name == "USER_USE_CASE_ERROR"){
+                return res.status(err.status).json({
+                    message: err.message 
+                })
+            }
+
+            if (err.name == "SMS_CASE_ERROR"){
+                return res.status(err.status).json({ 
+                    message : err.message
+                })
+            }
+            
+            console.log(err)
+            return res.status(500).send({ message: "Internal server error" });
+
+        }
+    }
+
+
+    resetPassword = async (req, res) => {
+
+        try{
+
+            const token = req.query.token 
+
+            const user_id = await this.usersUseCase.validatePasswordToken(token)
+
+            const {new_password, confirmed_password} = req.body
+            const validator = new UserResetPasswordBody(new_password, confirmed_password)
+            validator.validate()
+
+            await this.usersUseCase.resetPassword({user_id, new_password})
+
+            return res.status(201).send(true)
+
+        } catch(err){
+
+            if (err.name == "BODY_VALIDATION_ERROR"){
+                return res.status(400).json({ 
+                    message : err.message
+                })
+            }
+
+            if (err.name == "USER_USE_CASE_ERROR"){
+                return res.status(err.status).json({
+                    message: err.message 
+                })
+            }
+
+            console.log(err)
+            return res.status(500).send({ message: "Internal server error" });
+
+        }
+    }
+
+
+    deleteAccountRequest = async (req, res) => {
+
+        try{
+
+            const user_id = req.user_id
+            
+            const response = await this.usersUseCase.sendDeleteAccountToken(user_id)
+
+            return res.json(response)
+
+        } catch(err){
+
+            if (err.name == "BODY_VALIDATION_ERROR"){
+                return res.status(400).json({ 
+                    message : err.message
+                })
+            }
+
+            if (err.name == "USER_USE_CASE_ERROR"){
+                return res.status(err.status).json({
+                    message: err.message 
+                })
+            }
+
+            if (err.name == "EMAIL_CASE_ERROR"){
+                return res.status(err.status).json({
+                    message: err.message 
+                })
+            }
+            
+            console.log(err)
+            return res.status(500).send({ message: "Internal server error" });
+
+        }
+    }
+
+
+    deleteAccount = async (req, res) => {
+
+
+        try{
+
+            const token = req.query.token 
+
+            const user_id = await this.usersUseCase.validateDeleteAccountToken(token)
+
+            const response = await this.usersUseCase.deleteUserAccount(user_id)
+
+            return res.json(response)
+
+        } catch(err){
+
+            if (err.name == "USER_USE_CASE_ERROR"){
+                return res.status(err.status).json({
+                    message: err.message 
+                })
+            }
+
             console.log(err)
             return res.status(500).send({ message: "Internal server error" });
 
