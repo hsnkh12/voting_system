@@ -1,9 +1,9 @@
 const dotenv = require('dotenv');
-const RabbitMQ = require("./src/rabbitmq/rabbitmq.config")
+const RabbitMQ = require("./rabbitmq/rabbitmq.config")
 dotenv.config();
 const rabbitMQ = new RabbitMQ()
-const {submitVote} = require("./src/tasks/votes.task")
-const {generateResult} = require("./src/tasks/results.task")
+const {submitVote} = require("./tasks/votes.task")
+const {generateResult} = require("./tasks/results.task")
 
 async function bootstrap() {
 

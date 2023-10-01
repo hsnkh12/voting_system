@@ -1,17 +1,8 @@
-check permissions
 
-
-To add before the meeting 
-- increase no of candidate in election on add 
-- add more endpoints for vote_management_service 
- 
-Features to add 
-- Forget password endpoint
+- handle show attributes based on user role  
 - Verify face id on vote and signup 
 - send sms api 
-- user update profile info 
-- user change phone number 
-- check permissions
+- Add no of candidates in election as a count query for each request
 
 
 
