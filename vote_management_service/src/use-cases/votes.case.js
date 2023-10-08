@@ -1,5 +1,5 @@
 const axios = require("axios")
-
+const AES = require("../core/encrypt/aes.encrypt")
 
 module.exports = class VotesUseCase {
 
@@ -13,6 +13,9 @@ module.exports = class VotesUseCase {
 
     async publishVote(kwargs){
 
+
+        const encryptedUserId = AES.encrypt(kwargs.user_id)
+
         const headers = {
             Authorization: kwargs.headers['authorization'],
             'Content-Type': 'application/json'
@@ -24,7 +27,7 @@ module.exports = class VotesUseCase {
         }
 
         const vote = await this.votesRepo.findOne({
-            where: {user_id: kwargs.user_id, election_id: kwargs.election_id},
+            where: {user_id: encryptedUserId, election_id: kwargs.election_id},
             attributes: ["vote_id"]
         })
 
@@ -37,7 +40,7 @@ module.exports = class VotesUseCase {
 
         const publishPayload = {
             election_to_candidates : response.data, 
-            user_id: kwargs.user_id, 
+            user_id: encryptedUserId, 
             election_id:kwargs.election_id 
         }
 

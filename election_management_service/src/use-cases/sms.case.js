@@ -11,7 +11,7 @@ module.exports = class SMSUseCase{
     }
 
 
-    async sendSMSCode({user_id, phone_numner}){
+    async sendSMSCode({user_id, phone_number}){
 
         const currentDate = new Date();
         const exp_date = new Date(currentDate.getTime() + 300_000);
@@ -20,7 +20,7 @@ module.exports = class SMSUseCase{
         const nonExpiredsmsUserCodes = await this.smsRepo.find({ 
             where : {user_id : user_id, expire_date: {
                 [Op.gte]: currentDate
-            }},
+            }, phone_number},
             attributes: ["sms_user_code_id"]
         })
 
@@ -36,7 +36,7 @@ module.exports = class SMSUseCase{
         console.log(code);
         const hashedCode = await PasswordManager.hashPassword(code.toString())
 
-        await this.smsRepo.create({ user_id: user_id, code: hashedCode, expire_date: exp_date })
+        await this.smsRepo.create({ user_id: user_id, code: hashedCode, expire_date: exp_date , phone_number})
 
     }
 
@@ -47,7 +47,7 @@ module.exports = class SMSUseCase{
         const smsUserCode = await this.smsRepo.findOne({ 
             where : {user_id : kwargs.user_id, expire_date: {
                 [Op.gte]: currentDate
-            }},
+            }, phone_number: kwargs.phone_number},
             attributes: ["sms_user_code_id","code"]
         })
 
@@ -65,7 +65,7 @@ module.exports = class SMSUseCase{
         }
 
         await this.smsRepo.destroy({
-            where: {sms_user_code_id: smsUserCode.sms_user_code_id}
+            where: {sms_user_code_id: smsUserCode.sms_user_code_id, phone_number}
         })
         
         return true 

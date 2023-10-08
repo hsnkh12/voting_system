@@ -31,12 +31,12 @@ verifyUserMiddleware,
 resultsController.getOneResult)
 
 
-// Delete result. admin, election_service
-router.delete("election/:election_id",
-verifyTokenMiddleware,
-verifyUserMiddleware,
-verifyAdminMiddleware,
-resultsController.deleteResult)
+// // Delete result. admin, election_service
+// router.delete("election/:election_id",
+// verifyTokenMiddleware,
+// verifyUserMiddleware,
+// verifyAdminMiddleware,
+// resultsController.deleteResult)
 
 
 module.exports = router

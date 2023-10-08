@@ -60,24 +60,15 @@ module.exports = class UsersUseCase{
 
     }
 
-    async renewPhoneNumber({user_id, new_phone_number=null, renew=false}){
+    async renewPhoneNumber({user_id, new_phone_number}){
 
-        const user = await this.UsersRepo.findOne({where: {user_id}, attributes: ["user_id","renew_phone_number", "phone_number"]})
+        const user = await this.UsersRepo.findOne({where: {user_id}, attributes: ["user_id", "phone_number"]})
 
         if(!user){
             return this.throwError("User with id is not found")
         }
 
-        if(renew ){
-            if(user.renew_phone_number == null){
-                return this.throwError("New phone number is not defined", 400)
-            }
-            user.phone_number =user.renew_phone_number 
-            user.renew_phone_number = null
-        } else {
-            user.renew_phone_number = new_phone_number
-        }
-
+        user.phone_number =new_phone_number
         await this.UsersRepo.save(user)
     }
 

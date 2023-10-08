@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "amqplib": "^0.10.3",
+    "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "mysql2": "^3.6.0",
     "uuid": "^9.0.0"

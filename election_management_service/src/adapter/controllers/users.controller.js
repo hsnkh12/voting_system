@@ -300,11 +300,11 @@ module.exports = class UsersController{
     verifySMSCodeOnSingIn = async (req, res) => {
         try{
 
-            const {user_id, code} = req.body
-            const validator = new UserSMSVerifyBody(user_id, code)
+            const {user_id, code, phone_number} = req.body
+            const validator = new UserSMSVerifyBody(user_id, code, phone_number)
             validator.validate()
 
-            await this.smsUseCase.verifySMSCode({user_id, code})
+            await this.smsUseCase.verifySMSCode({user_id, code, phone_number})
 
             const response = await this.usersUseCase.signJWTOnSignin(user_id)
 
@@ -388,7 +388,6 @@ module.exports = class UsersController{
             }
 
             await this.smsUseCase.sendSMSCode({user_id, phone_number:new_phone_number})
-            await this.usersUseCase.renewPhoneNumber({user_id, new_phone_number, renew:false})
 
             return res.send(true)
 
@@ -416,15 +415,11 @@ module.exports = class UsersController{
 
         try{
 
-            const {code} = req.body 
+            const {code, new_phone_number} = req.body 
             const user_id = req.user_id
 
-            if(!code){
-                return this.usersUseCase.throwError("code field is missing", 400)
-            }
-
-            await this.smsUseCase.verifySMSCode({user_id, code})
-            await this.usersUseCase.renewPhoneNumber({user_id, renew: true})
+            await this.smsUseCase.verifySMSCode({user_id, code, phone_number: new_phone_number})
+            await this.usersUseCase.renewPhoneNumber({user_id, new_phone_number})
 
             return res.send(true)
 

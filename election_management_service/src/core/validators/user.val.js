@@ -97,9 +97,10 @@ class UserSigninBody{
 
 class UserSMSVerifyBody{
 
-    constructor(user_id, code){
+    constructor(user_id, code, phone_number){
         this.user_id = user_id
         this.code = code
+        this.phone_number = phone_number
     }
 
     validate(){
@@ -113,6 +114,10 @@ class UserSMSVerifyBody{
         }
         if(!this.code){
             error.message = "code field is missing"
+            throw error
+        }
+        if(!this.phone_number){
+            error.message = "phone_number field is missing"
             throw error
         }
 

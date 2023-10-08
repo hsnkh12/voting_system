@@ -1,7 +1,6 @@
 const {createNewConnection} = require("../db/db")
 const uuid = require("uuid")
 
-
 const submitVote = async (kwargs) => {
 
 
@@ -15,7 +14,10 @@ const submitVote = async (kwargs) => {
       const currentDate = new Date()
 
 
-      const rows =await  connection.execute('SELECT election_id, user_id FROM Votes WHERE election_id=? AND user_id=?',[kwargs.election_id, kwargs.user_id])
+      const encryptedUserId = kwargs.user_id
+
+
+      const rows =await  connection.execute('SELECT election_id, user_id FROM Votes WHERE election_id=? AND user_id=?',[kwargs.election_id, encryptedUserId])
 
 
       if (rows[0].length >= 1){
@@ -24,8 +26,8 @@ const submitVote = async (kwargs) => {
         return
       }
   
-      await connection.execute('INSERT INTO Votes(vote_id,user_id,election_id,no_of_votes,date_added,createdAt,updatedAt) VALUES(?,?,?,?,?,?,?);',
-      [vote_id, kwargs.user_id, kwargs.election_id, elec_to_cands.length, currentDate, currentDate, currentDate]);
+      await connection.execute('INSERT INTO Votes(vote_id,user_id,election_id,no_of_votes, createdAt,updatedAt) VALUES(?,?,?,?,?,?,?);',
+      [vote_id, encryptedUserId, kwargs.election_id, elec_to_cands.length, currentDate, currentDate]);
 
       for( election_to_candidate of elec_to_cands){
         await connection.execute('INSERT INTO VoteToCandidates(candidate_name,vote_id,election_to_candidate_id,createdAt,updatedAt, election_id) VALUES(?,?,?,?,?,?);',

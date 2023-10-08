@@ -28,29 +28,29 @@ votesController.submitVote
 )
 
 
-// Get all votes for election, admin 
-router.get("/election/:election_id",
-verifyTokenMiddleware,
-verifyUserMiddleware,
-verifyAdminMiddleware,
-votesController.getAllVoteToCandidate
-)
+// // Get all votes for election, admin 
+// router.get("/election/:election_id",
+// verifyTokenMiddleware,
+// verifyUserMiddleware,
+// verifyAdminMiddleware,
+// votesController.getAllVoteToCandidate
+// )
 
-// Get one vote submission , admin
-router.get("/submissions/:vote_id",
-verifyTokenMiddleware,
-verifyUserMiddleware,
-verifyAdminMiddleware,
-votesController.getOneVote
-)
+// // Get one vote submission , admin
+// router.get("/submissions/:vote_id",
+// verifyTokenMiddleware,
+// verifyUserMiddleware,
+// verifyAdminMiddleware,
+// votesController.getOneVote
+// )
 
-// Get all vote submissions for election, admin 
-router.get("/submissions/election/:election_id",
-verifyTokenMiddleware,
-verifyUserMiddleware,
-verifyAdminMiddleware,
-votesController.getAllVotes
-)
+// // Get all vote submissions for election, admin 
+// router.get("/submissions/election/:election_id",
+// verifyTokenMiddleware,
+// verifyUserMiddleware,
+// verifyAdminMiddleware,
+// votesController.getAllVotes
+// )
 
 
 

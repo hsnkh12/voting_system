@@ -31,11 +31,6 @@ class User{
       unique: true,
       allowNull: false,
     },
-    renew_phone_number: {
-      type: DataTypes.STRING(20),
-      allowNull: true,
-      defaultValue: null,
-    },
     password: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -57,6 +52,10 @@ class User{
     last_login: {
       type: DataTypes.DATEONLY,
     },
+    flagged : {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
 });
 }
 

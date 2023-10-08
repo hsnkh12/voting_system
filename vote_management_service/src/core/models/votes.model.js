@@ -9,7 +9,7 @@ this.model = db.define('Vote', {
       allowNull: false,
     },
     user_id: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING,
       allowNull: false,
     },
     election_id: {
@@ -19,10 +19,6 @@ this.model = db.define('Vote', {
     no_of_votes: {
       type: DataTypes.INTEGER,
       defaultValue: 0
-    },
-    date_added: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
     },
   
   });

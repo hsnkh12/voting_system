@@ -3,6 +3,7 @@
 - Verify face id on vote and signup 
 - send sms api 
 - Add no of candidates in election as a count query for each request
+- Encrypt votes
 
 
 
