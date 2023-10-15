@@ -25,6 +25,15 @@ module.exports = class UsersUseCase{
         return {token}
     }
 
+    async updateUserLoginStatus(user_id){
+
+        const  user = await this.UsersRepo.findOne({where: user_id, attributes:["user_id","last_login"]})
+        user.last_login = new Date()
+
+        await this.UsersRepo.save(user)
+        return true
+    }
+
     async createUser(kwargs){
 
         const hashedPassword = await PasswordManager.hashPassword(kwargs.password)
@@ -35,7 +44,7 @@ module.exports = class UsersUseCase{
 
         const user = await this.UsersRepo.create(kwargs)
 
-        return {user_id:user.user_id} 
+        return {user_id:user.user_id, phone_number: user.phone_number} 
 
     }
 
@@ -43,7 +52,7 @@ module.exports = class UsersUseCase{
 
         const user = await this.UsersRepo.findOne({
             where:{email: kwargs.email},
-            attributes: ["user_id", "email", "password", "phone_number"]
+            attributes: ["user_id", "email", "password", "phone_number", "last_login"]
         })
 
         if(!user){
@@ -56,7 +65,7 @@ module.exports = class UsersUseCase{
             return this.throwError("Invalid crednitials", 401)
         }
 
-        return {user_id:user.user_id}
+        return {user_id: user.user_id, phone_number: user.phone_number}
 
     }
 
@@ -247,7 +256,7 @@ module.exports = class UsersUseCase{
             return this.throwError("User with this email is not found", 404)
         }
 
-        const token = jwt.sign({ user_id: user.user_id_password, reset_password: true }, this.JWT_SECRET_KEY, { expiresIn: '10m' });
+        const token = jwt.sign({ user_id_password: user.user_id, reset_password: true }, this.JWT_SECRET_KEY, { expiresIn: '10m' });
 
         const resetLink = `http://localhost:${process.env.APP_PORT}/users/reset-password?token=${token}`;
 
@@ -265,7 +274,7 @@ module.exports = class UsersUseCase{
             if(!decodedToken.user_id_password || !decodedToken.reset_password){
                 return this.throwError("Invalid password token",403)
             }
-
+            console.log(decodedToken)
             return decodedToken.user_id_password
         } catch(err){
             return this.throwError("Invalid password token", 403)

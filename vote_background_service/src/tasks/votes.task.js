@@ -26,7 +26,7 @@ const submitVote = async (kwargs) => {
         return
       }
   
-      await connection.execute('INSERT INTO Votes(vote_id,user_id,election_id,no_of_votes, createdAt,updatedAt) VALUES(?,?,?,?,?,?,?);',
+      await connection.execute('INSERT INTO Votes(vote_id,user_id,election_id,no_of_votes, createdAt,updatedAt) VALUES(?,?,?,?,?,?);',
       [vote_id, encryptedUserId, kwargs.election_id, elec_to_cands.length, currentDate, currentDate]);
 
       for( election_to_candidate of elec_to_cands){

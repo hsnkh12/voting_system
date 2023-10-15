@@ -1,4 +1,8 @@
 {
+  "name": "Vote background service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
   "dependencies": {
     "amqplib": "^0.10.3",
     "crypto": "^1.0.1",

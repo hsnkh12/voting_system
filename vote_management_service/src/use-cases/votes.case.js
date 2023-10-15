@@ -14,7 +14,9 @@ module.exports = class VotesUseCase {
     async publishVote(kwargs){
 
 
-        const encryptedUserId = AES.encrypt(kwargs.user_id)
+        const aes = new AES()
+        const user_id = kwargs.user_id.toString()
+        const encryptedUserId = aes.encrypt(user_id)
 
         const headers = {
             Authorization: kwargs.headers['authorization'],

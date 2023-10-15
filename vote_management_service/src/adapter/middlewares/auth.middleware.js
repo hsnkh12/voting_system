@@ -30,7 +30,6 @@ function verifyUserMiddleware(req, res, next) {
         if (err) {
             return res.sendStatus(403);
         } else {
-
             req.is_admin = data.user_to_enc.is_admin
             req.user_id = data.user_to_enc.user_id
             req.face_id_verified = data.user_to_enc.face_id_verified

@@ -67,7 +67,7 @@ module.exports = class UsersController{
 
             const user = await this.usersUseCase.validateUser({email, password})
 
-            await this.smsUseCase.sendSMSCode({user: user.user_id, phone_number: user.phone_number})
+            await this.smsUseCase.sendSMSCode({user_id: user.user_id, phone_number: user.phone_number})
 
             return res.status(200).json(user)
 
@@ -307,6 +307,8 @@ module.exports = class UsersController{
             await this.smsUseCase.verifySMSCode({user_id, code, phone_number})
 
             const response = await this.usersUseCase.signJWTOnSignin(user_id)
+
+            await this.usersUseCase.updateUserLoginStatus(user_id)
 
             return res.json(response)
 

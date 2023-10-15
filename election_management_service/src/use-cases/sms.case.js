@@ -65,7 +65,7 @@ module.exports = class SMSUseCase{
         }
 
         await this.smsRepo.destroy({
-            where: {sms_user_code_id: smsUserCode.sms_user_code_id, phone_number}
+            where: {sms_user_code_id: smsUserCode.sms_user_code_id, phone_number: kwargs.phone_number}
         })
         
         return true 

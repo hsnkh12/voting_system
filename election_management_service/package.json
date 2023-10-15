@@ -1,5 +1,5 @@
 {
-  "name": "voting_system",
+  "name": "Election managment service",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
@@ -22,7 +22,8 @@
     "nodemon": "^3.0.1",
     "path": "^0.12.7",
     "sequelize": "^6.32.1",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "xss-clean": "^0.1.4"
   },
   "devDependencies": {
     "sequelize-cli": "^6.6.1"
