@@ -17,6 +17,12 @@ const smsUseCase = new SMSUseCase(smsRepo, usersRepo)
 const usersController = new UsersController(usersUseCase, smsUseCase)
 
 
+router.get("/is/auth/",
+verifyTokenMiddleware,
+verifyUserMiddleware,
+(req,res) => {
+    return res.send(true)
+})
 
 // /users/
 router.get("/", 

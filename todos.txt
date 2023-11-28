@@ -2,8 +2,7 @@
 - handle show attributes based on user role  
 - Verify face id on vote and signup 
 - send sms api 
-- Add no of candidates in election as a count query for each request
-- Encrypt votes
+- System allows user to vote for the same election more than once. fix it
 
 
 
