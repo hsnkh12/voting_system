@@ -13,7 +13,6 @@ module.exports = class VotesUseCase {
 
     async publishVote(kwargs){
 
-
         const aes = new AES()
         const user_id = kwargs.user_id.toString()
         const encryptedUserId = aes.encrypt(user_id)
@@ -28,14 +27,10 @@ module.exports = class VotesUseCase {
             candidates: kwargs.candidates
         }
 
-        const vote = await this.votesRepo.findOne({
-            where: {user_id: encryptedUserId, election_id: kwargs.election_id},
-            attributes: ["vote_id"]
-        })
-
-        if (vote){
-            return this.throwError("User can only vote once on each election", 400)
+        if (await this.userVotedForElection({encryptedUserId, election_id: kwargs.election_id})){
+            return this.throwError("User already voted for this election", 400)
         }
+
 
         const url = "http://"+process.env.ELECTION_MANAGEMENT_SERVICE_HOST+":"+process.env.ELECTION_MANAGEMENT_SERVICE_PORT+"/elections/init-vote-request"
         const response = await axios.post(url, body, {headers});
@@ -52,10 +47,25 @@ module.exports = class VotesUseCase {
         return response.data 
     }
 
+
+    async userVotedForElection({encryptedUserId, election_id}){
+
+        const vote = await this.votesRepo.findOne({
+            where: {user_id: encryptedUserId, election_id: election_id},
+            attributes: ["vote_id"]
+        })
+
+        if (vote){
+            return true
+        }
+
+        return false
+    }
+
     async findOneVote(vote_id){
 
         const vote = await this.votesRepo.findOne({where: {vote_id}})
-
+        console.log(require('crypto').randomBytes(16).toString('hex'))
         if(!vote){
             return this.throwError("Vote with this id is not found", 404)
         }

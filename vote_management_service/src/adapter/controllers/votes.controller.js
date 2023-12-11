@@ -1,42 +1,42 @@
-
+const AES = require("../../core/encrypt/aes.encrypt")
 
 
 module.exports = class VotesController {
 
-    constructor(votesUseCase){
+    constructor(votesUseCase) {
         this.votesUseCase = votesUseCase
     }
 
 
     submitVote = async (req, res) => {
 
-        try{
+        try {
 
-            const {election_id, candidates} = req.body 
+            const { election_id, candidates } = req.body
 
-            if (!election_id || !candidates){
+            if (!election_id || !candidates) {
                 return res.status(400).json({
                     message: "election_id and candidates required in body"
                 })
             }
 
-            const resp = await this.votesUseCase.publishVote({election_id, candidates, headers: req.headers, user_id: req.user_id})
+            const resp = await this.votesUseCase.publishVote({ election_id, candidates, headers: req.headers, user_id: req.user_id })
 
-            return res.send(resp) 
+            return res.send(resp)
 
-        } catch(err){
+        } catch (err) {
 
 
-            if (err.name == "AxiosError"){
+            if (err.name == "AxiosError") {
                 console.log(err)
                 return res.status(400).json({
                     message: err.response.data.message
                 })
             }
 
-            if (err.name == "VOTE_CASE_ERROR"){
-                return res.status(err.status).json({ 
-                    message : err.message
+            if (err.name == "VOTE_CASE_ERROR") {
+                return res.status(err.status).json({
+                    message: err.message
                 })
             }
 
@@ -45,13 +45,39 @@ module.exports = class VotesController {
             return res.status(500).json({
                 message: "Internal server error"
             })
-            
+
+        }
+    }
+
+
+    userVotedForElection = async (req, res) => {
+
+        try {
+            const election_id = req.params.election_id
+            const aes = new AES()
+            const encryptedUserId = aes.encrypt(req.user_id.toString())
+            console.log(encryptedUserId)
+            const resp = await this.votesUseCase.userVotedForElection({encryptedUserId, election_id})
+            return res.send(resp)
+
+        } catch (err) {
+            if (err.name == "VOTE_CASE_ERROR") {
+                return res.status(err.status).json({
+                    message: err.message
+                })
+            }
+
+            console.log(err)
+
+            return res.status(500).json({
+                message: "Internal server error"
+            })
         }
     }
 
     getOneVote = async (req, res) => {
 
-        try{
+        try {
 
             const vote_id = req.params.vote_id
 
@@ -59,11 +85,11 @@ module.exports = class VotesController {
 
             return res.json(vote)
 
-        } catch(err){
+        } catch (err) {
 
-            if (err.name == "VOTE_CASE_ERROR"){
-                return res.status(err.status).json({ 
-                    message : err.message
+            if (err.name == "VOTE_CASE_ERROR") {
+                return res.status(err.status).json({
+                    message: err.message
                 })
             }
 
@@ -72,19 +98,19 @@ module.exports = class VotesController {
             return res.status(500).json({
                 message: "Internal server error"
             })
-            
+
         }
     }
 
     getAllVoteToCandidate = async (req, res) => {
 
-        try{
+        try {
 
-        } catch(err) {
+        } catch (err) {
 
-            if (err.name == "VOTE_CASE_ERROR"){
-                return res.status(err.status).json({ 
-                    message : err.message
+            if (err.name == "VOTE_CASE_ERROR") {
+                return res.status(err.status).json({
+                    message: err.message
                 })
             }
 
@@ -99,7 +125,7 @@ module.exports = class VotesController {
 
     getAllVotes = async (req, res) => {
 
-        try{
+        try {
 
             const election_id = req.params.election_id
 
@@ -107,11 +133,11 @@ module.exports = class VotesController {
 
             return res.json(votes)
 
-        } catch(err){
+        } catch (err) {
 
-            if (err.name == "VOTE_CASE_ERROR"){
-                return res.status(err.status).json({ 
-                    message : err.message
+            if (err.name == "VOTE_CASE_ERROR") {
+                return res.status(err.status).json({
+                    message: err.message
                 })
             }
 
@@ -120,14 +146,14 @@ module.exports = class VotesController {
             return res.status(500).json({
                 message: "Internal server error"
             })
-            
+
         }
     }
 
 
     getAllVoteToCandidates = async (req, res) => {
 
-        try{
+        try {
 
             const election_id = req.params.election_id
 
@@ -135,11 +161,11 @@ module.exports = class VotesController {
 
             return res.json(votes)
 
-        } catch(err) {
+        } catch (err) {
 
-            if (err.name == "VOTE_CASE_ERROR"){
-                return res.status(err.status).json({ 
-                    message : err.message
+            if (err.name == "VOTE_CASE_ERROR") {
+                return res.status(err.status).json({
+                    message: err.message
                 })
             }
 
@@ -153,6 +179,6 @@ module.exports = class VotesController {
     }
 
     deleteAllVotes = async (req, res) => {
-        
+
     }
 }

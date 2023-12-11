@@ -1,12 +1,20 @@
 const crypto = require('crypto');
 
 
-class AES{
+class AES {
 
-    constructor(){
-        this.KEY = crypto.randomBytes(32); 
+    constructor() {
+        this.KEY = crypto
+            .createHash('sha512')
+            .update(process.env.AES_KEY)
+            .digest('hex')
+            .substring(0, 32)
         this.algorithm = "aes-256-cbc"
-        this.iv = crypto.randomBytes(16); 
+        this.iv = crypto
+            .createHash('sha512')
+            .update(process.env.IV_KEY)
+            .digest('hex')
+            .substring(0, 16)
     }
 
 

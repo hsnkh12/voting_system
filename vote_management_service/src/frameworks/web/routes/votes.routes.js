@@ -52,6 +52,11 @@ verifyAdminMiddleware,
 votesController.getAllVotes
 )
 
+router.get('/check-user-vote/:election_id',
+verifyTokenMiddleware,
+verifyUserMiddleware,
+votesController.userVotedForElection)
+
 
 
 module.exports = router
