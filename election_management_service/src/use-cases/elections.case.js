@@ -72,11 +72,11 @@ module.exports = class ElectionsUseCase{
     findAllElections = async (query) => {
 
         const page = Number.isInteger(query.definePage())? query.definePage() : 1
-        const offset = (page - 1) * 50;
-
+        const offset = (page - 1) * 10;
+        
         const clause = {
             offset,
-            limit: 50,
+            limit: 10,
             where: query.defineClause(),
             order: [query.defineSort()],
             attributes: ["election_id","election_type","title","start_date","end_date","expected_end_date","status","no_of_candidates"]

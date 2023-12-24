@@ -45,6 +45,10 @@ verifyUserMiddleware,
 verifyAdminMiddleware,
 usersController.getOneUserByUsername)
 
+router.get("/user/profile", 
+verifyTokenMiddleware,
+verifyUserMiddleware,
+usersController.getProfile)
 
 // Update user info: admin, user
 router.put("/:user_id",
@@ -65,6 +69,8 @@ verifyTokenMiddleware,
 verifyUserMiddleware, 
 usersController.updatePassword)
 
+router.post('/contact/us',
+usersController.contactUs)
 // Forget password: admin, user
 router.post("/reset-password/request",
 usersController.resetPasswordRequest)
@@ -79,8 +85,11 @@ verifyTokenMiddleware,
 verifyUserMiddleware, 
 usersController.deleteAccountRequest)
 
+
 // Delete account: admin, user
 router.post("/delete-account",
+verifyTokenMiddleware,
+verifyUserMiddleware,
 usersController.deleteAccount)
 
 // verify face id: face rec service 

@@ -102,14 +102,14 @@ module.exports = class UsersUseCase{
     async findOneUserById(user_id){
 
         const clause = {
-            where: {user_id},
+            where: {user_id:user_id},
             attributes: ["user_id", "username", "email", "first_name","last_name","phone_number","date_joined","last_login"]
         }
 
         const user = await this.UsersRepo.findOne(clause)
 
         if (!user){
-            return this.throwError("User with this id is not found", 404)
+            return this.throwError("", 403)
         }
 
         return user
@@ -265,6 +265,9 @@ module.exports = class UsersUseCase{
         return true 
     }
 
+    async sendContactUsEmail(body){
+        return await this.emailUseCase.sendEmail({to: body.email, message: body.message, title: 'Contact Us'})
+    }
 
     async validatePasswordToken(token){
 

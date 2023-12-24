@@ -152,6 +152,19 @@ module.exports = class UsersController{
         }
     }
 
+    getProfile = async (req, res) => {
+
+        try{
+           
+            const r = await this.usersUseCase.findOneUserById(req.user_id)
+            return res.json(r)
+
+        } catch(err){
+            return res.status(403)
+
+        }
+    }
+
     getOneUserByUsername = async (req, res)=>{
         try{
             const username = req.params.username
@@ -516,6 +529,19 @@ module.exports = class UsersController{
             console.log(err)
             return res.status(500).send({ message: "Internal server error" });
 
+        }
+    }
+
+    contactUs = async (req, res) => {
+
+        try{
+            await this.usersUseCase.sendContactUsEmail(req.body)
+            return res.json(true)
+        } catch(err){
+            console.log(err)
+            return res.status(500).json({
+                message: "Internal server error"
+            })
         }
     }
 

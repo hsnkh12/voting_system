@@ -47,7 +47,9 @@ class ElectionFilterQuery{
         // status, start_date, end_date, expected_end_date, 
         let clause = {}
 
-
+        if(this.query.title){
+            clause.title = this.query.title
+        }
         if(this.query.status){
             clause.status = this.query.status
         }
