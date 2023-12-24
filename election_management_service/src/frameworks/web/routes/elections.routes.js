@@ -67,6 +67,11 @@ verifyTokenMiddleware,
 verifyUserMiddleware,
 electionsController.getAllElections)
 
+router.get("/candidate-involved/:candidate_id",
+verifyTokenMiddleware,
+verifyUserMiddleware,
+electionsToCandsController.getInvolvedElections
+)
 // Read one election: admin, user
 router.get("/:election_id",
 verifyTokenMiddleware,

@@ -56,11 +56,9 @@ module.exports = class SMSUseCase{
             this.throwError("User code is not found", 404)
           }
 
+        const isCodeVerified = await PasswordManager.comparePassword(kwargs.code.toString(), smsUserCode.code)
 
-        const hashedCode = await PasswordManager.hashPassword(kwargs.code)
-        const isCodeVerified = await PasswordManager.comparePassword(smsUserCode.code, hashedCode)
-
-        if (isCodeVerified){
+        if (!isCodeVerified){
             return this.throwError("Code is not valid", 403)
         }
 

@@ -24,8 +24,7 @@ module.exports = class CandidatesUseCase{
         const offset = (page - 1) * 50;
 
         const clause = {
-            offset,
-            limit: 50,
+            where: {...query.defineClause()},
             order: [query.defineSort()],
         }
 

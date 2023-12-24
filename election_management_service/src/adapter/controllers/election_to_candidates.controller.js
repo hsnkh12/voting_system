@@ -74,8 +74,9 @@ module.exports = class ElectionToCandsController{
         try {
 
             const election_id = req.params.election_id
+            const query = req.query 
 
-            const candidates = await this.electionsToCandsUseCase.findAllCandidates(election_id)
+            const candidates = await this.electionsToCandsUseCase.findAllCandidates(election_id, query)
             return res.json(candidates)
 
 
@@ -87,6 +88,25 @@ module.exports = class ElectionToCandsController{
                 })
             }
 
+            console.log(err)
+            return res.status(500).json({
+                message: "Internal server error"
+            })
+
+        }
+    }
+
+    getInvolvedElections = async (req, res) => {
+
+        try{
+
+            const {candidate_id} = req.params 
+
+            const r = await this.electionsToCandsUseCase.findAllInvolvedElections(candidate_id)
+
+            return res.json(r)
+
+        } catch(err){
             console.log(err)
             return res.status(500).json({
                 message: "Internal server error"

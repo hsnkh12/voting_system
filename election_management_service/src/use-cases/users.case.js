@@ -12,7 +12,7 @@ module.exports = class UsersUseCase{
 
     async signJWTOnSignin(user_id){
 
-        const user = await this.UsersRepo.findOne({where:{user_id}, attributes:["user_id", "is_admin", "face_id_verified"]})
+        const user = await this.UsersRepo.findOne({where:{user_id}, attributes:["user_id", "is_admin", "face_id_verified", 'username']})
 
         if (!user){
             return this.throwError("User with this id is not found",404)
@@ -22,12 +22,12 @@ module.exports = class UsersUseCase{
 
         const token = await jwt.sign({user_to_enc}, this.JWT_SECRET_KEY, {expiresIn: '30m'})
 
-        return {token}
+        return {token, username: user.username}
     }
 
     async updateUserLoginStatus(user_id){
 
-        const  user = await this.UsersRepo.findOne({where: user_id, attributes:["user_id","last_login"]})
+        const  user = await this.UsersRepo.findOne({where: {user_id}, attributes:["user_id","last_login"]})
         user.last_login = new Date()
 
         await this.UsersRepo.save(user)

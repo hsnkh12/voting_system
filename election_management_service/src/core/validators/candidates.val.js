@@ -51,6 +51,15 @@ class CandidateFilterQuery{
         return this.query.page ? Number(this.query.page) : 1
     }
 
+    defineClause(){
+
+        const q = {}
+        if(this.query.candidate_name){
+            q.candidate_name = this.query.candidate_name
+        }
+        return q
+    }
+
     defineSort(){
 
         const sort = []

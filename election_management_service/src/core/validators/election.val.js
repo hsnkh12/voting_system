@@ -63,6 +63,9 @@ class ElectionFilterQuery{
         if(this.query.expected_end_date){
             clause.expected_end_date = new Date(this.query.expected_end_date)
         }
+        if(this.query.election_title){
+            clause.election_title = this.query.election_title
+        }
 
         return clause
 
