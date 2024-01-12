@@ -19,10 +19,6 @@ module.exports = class ResultsUseCase {
 
         const result = await this.resultsRepo.findOne({where: {election_id}})
 
-        if (!result){
-            return this.throwError("Result with this id is not found")
-        }
-
         return result
     }
 
