@@ -24,7 +24,7 @@ static define = (db) => {
     onUpdate: 'CASCADE', // Cascade update
   },
   phone_number : {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING(20),
     allowNull: false
   },
   code: {

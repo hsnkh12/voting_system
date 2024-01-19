@@ -42,9 +42,7 @@ export default function PhoneNumber(props){
         e.preventDefault()
         await verifySMSCode(formValues.code, redirectUrl, new_phone_number, setPageNotify)
         } catch(err){
-            if (err.response.status === 403) {
-                navigate('/auth/login/?redirect=/auth/profile/&phone_number_change=true')
-            } 
+            
             const message = err.response.data.message? err.response.data.message: "Server error"
             setNotify({message: message, status: 'error'})
         }

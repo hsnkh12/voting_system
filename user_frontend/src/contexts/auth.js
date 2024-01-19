@@ -42,13 +42,13 @@ const useAuth = () => {
 
   const registerUser = async (registerInfo, redirectUrl) => {
 
-    const response = await axios.post("http://"+process.env.REACT_APP_ELECTION_SERVICE_HOST+"/users/signup", registerInfo)
+    const response = await axios.post("http://" + process.env.REACT_APP_ELECTION_SERVICE_HOST + "/users/signup", registerInfo)
 
     const { user_id, phone_number } = response.data
 
     localStorage.setItem('user_id', user_id);
     localStorage.setItem('phone_number', phone_number)
-    navigate('/auth/phone-number-verify?redirect='+redirectUrl);
+    navigate('/auth/phone-number-verify?redirect=' + redirectUrl);
   }
 
   const authenticateUser = async (loginInfo, redirectUrl) => {
@@ -56,37 +56,37 @@ const useAuth = () => {
     // setError(null);
 
 
-    const response = await axios.post("http://"+process.env.REACT_APP_ELECTION_SERVICE_HOST+"/users/signin", loginInfo);
+    const response = await axios.post("http://" + process.env.REACT_APP_ELECTION_SERVICE_HOST + "/users/signin", loginInfo);
 
     const { user_id, phone_number } = response.data
 
     localStorage.setItem('user_id', user_id);
     localStorage.setItem('phone_number', phone_number)
-   
-    navigate('/auth/phone-number-verify/?redirect='+redirectUrl);
+
+    navigate('/auth/phone-number-verify/?redirect=' + redirectUrl);
 
 
   };
 
 
-  const verifySMSCode = async (code, redirectUrl, new_phone_number=null, setPageNotify) => {
+  const verifySMSCode = async (code, redirectUrl, new_phone_number = null, setPageNotify) => {
 
 
-    if(new_phone_number){
+    if (new_phone_number) {
 
       const token = localStorage.getItem('token')
 
-      await axios.post("http://"+process.env.REACT_APP_ELECTION_SERVICE_HOST+"/users/change-phone-number",{
+      await axios.post("http://" + process.env.REACT_APP_ELECTION_SERVICE_HOST + "/users/change-phone-number", {
         new_phone_number,
         code
       }, {
         headers: {
-          Authorization: 'Bearer '+token
+          Authorization: 'Bearer ' + token
         }
       })
-      setPageNotify({message:'Phone number has been updated', status: 'success'})
+      setPageNotify({ message: 'Phone number has been updated', status: 'success' })
       navigate(redirectUrl)
-      return 
+      return
     }
 
     const user_id = localStorage.getItem('user_id')
@@ -97,11 +97,11 @@ const useAuth = () => {
       return
     }
 
-    const response = await axios.post("http://"+process.env.REACT_APP_ELECTION_SERVICE_HOST+"/users/verify-sms-code-signin", {
+    const response = await axios.post("http://" + process.env.REACT_APP_ELECTION_SERVICE_HOST + "/users/verify-sms-code-signin", {
       user_id, phone_number, code
     })
 
-    const { username, token } = response.data
+    const { username, token, face_id_verified } = response.data
 
     localStorage.setItem('token', token);
     localStorage.setItem('username', username)
@@ -112,8 +112,15 @@ const useAuth = () => {
 
     localStorage.removeItem('phone_number')
 
-    setPageNotify({message:'You are logged in to the system', status: 'success'})
-    navigate(redirectUrl)
+    setPageNotify({ message: 'You are logged in to the system', status: 'success' })
+
+    if (face_id_verified === false) {
+      window.location.href = "https://"+process.env.REACT_APP_FACE_FRONTEND_HOST+"/?token=" + token
+      return
+    } else if (face_id_verified === true) {
+      navigate(redirectUrl)
+      return 
+    }
 
 
   }

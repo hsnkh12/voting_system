@@ -305,8 +305,21 @@ module.exports = class UsersController{
     verifyFaceIdOnSignup = async (req, res) => {
         try{
 
+            const {token} = req.body 
+
+            const r = await this.usersUseCase.verifyFaceId(token)
+
+            return res.send(r)
         } catch(err){
 
+            if (err.name == "USER_USE_CASE_ERROR"){
+                return res.status(err.status).json({
+                    message: err.message 
+                })
+            }
+            
+            console.log(err)
+            return res.status(500).send({ message: "Internal server error" });
         }
     }
 
