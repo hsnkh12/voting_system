@@ -145,7 +145,7 @@ export default function Profile(props) {
                         }
                     });
 
-                    // localStorage.setItem("token", face_reco_token)
+                    localStorage.setItem("token", face_reco_token)
                     window.location.href = "http://" + process.env.REACT_APP_HOST + "/auth/profile/"
                 } catch (err) {
                     setNotify({ message: "User face ID verification error", status: "error" })
