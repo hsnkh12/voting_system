@@ -40,7 +40,7 @@ module.exports = class VotesUseCase {
         console.log(message)
         console.log(hashedMessage)
         if(hashedMessage !== message){
-            return this.throwError("Invalid face ID verification")
+            return this.throwError("Invalid face ID verification", 400)
         }
 
         const headers = {
