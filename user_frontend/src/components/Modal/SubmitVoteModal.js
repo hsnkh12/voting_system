@@ -7,6 +7,8 @@ import DialogActions from '@mui/material/DialogActions';
 import Grid from "@mui/material/Grid"
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export default function SubmitVoteModal(props) {
 
@@ -20,33 +22,47 @@ export default function SubmitVoteModal(props) {
     } = props
 
     const navigate = useNavigate()
+    const [searchParams, _] = useSearchParams()
+    const face_reco_token = searchParams.get('face_reco_token')
 
 
     const handleVoteSubmit = async () => {
-        // Later redirect to face id reco, for now, just submit the vote 
 
         try {
 
             const token = localStorage.getItem('token')
 
-            const res = await axios.post("http://"+process.env.REACT_APP_VOTE_SERVICE_HOST+"/votes/submit", 
-            {
-                election_id,
-                candidates: [...selectedCandidates]
-            },
-            {
-                headers:{Authorization: 'Bearer ' + token}
+            await axios.get("http://" + process.env.REACT_APP_ELECTION_SERVICE_HOST + "/users/is/auth", {
+                headers: { Authorization: 'Bearer ' + token }
             })
 
-            setUserVoted(true)
+            localStorage.setItem('helded_vote', JSON.stringify({
+                candidates: selectedCandidates,
+                election_id: election_id
+            }))
+
             handleCloseModal()
+
+            window.location.href = "https://" + process.env.REACT_APP_FACE_FRONTEND_HOST + "/verf/?user_id=" + localStorage.getItem("user_id") + "&election_id=" + election_id
+
+            // const res = await axios.post("http://"+process.env.REACT_APP_VOTE_SERVICE_HOST+"/votes/submit", 
+            // {
+            //     election_id,
+            //     candidates: [...selectedCandidates]
+            // },
+            // {
+            //     headers:{Authorization: 'Bearer ' + token}
+            // })
+
+            // setUserVoted(true)
+            // handleCloseModal()
 
         } catch (err) {
 
-            if(!err.response){
-                navigate("/") 
-                setPageNotify({message: 'Server error', status:'error'})
-                return 
+            if (!err.response) {
+                navigate("/")
+                setPageNotify({ message: 'Server error', status: 'error' })
+                return
             }
             if (err.response.status === 403) {
                 navigate('/auth/login/?redirect=/elections/' + election_id + "/")
@@ -56,6 +72,54 @@ export default function SubmitVoteModal(props) {
             console.log(err)
         }
     }
+
+    useEffect(() => {
+
+        if (face_reco_token) {
+
+            const submitVote = async () => {
+
+                try {
+
+                    const token = localStorage.getItem('token')
+                    const vote = JSON.parse(localStorage.getItem('helded_vote'))
+
+                    if(!vote || !vote.election_id || vote.election_id !== election_id.toString() || vote.candidates.length === 0){
+                        return
+                    }
+
+                    await axios.post("http://" + process.env.REACT_APP_VOTE_SERVICE_HOST + "/votes/submit",
+                        {
+                            election_id: parseInt(vote.election_id),
+                            candidates: vote.candidates,
+                            face_reco_token
+                        },
+                        {
+                            headers: { Authorization: 'Bearer ' + token }
+                        })
+                        window.location.href = "http://" + process.env.REACT_APP_HOST + "/elections/"+vote.election_id
+                } catch (err) {
+                    if (!err.response) {
+                        navigate("/")
+                        setPageNotify({ message: 'Server error', status: 'error' })
+                        return
+                    }
+                    if(err.response.status === 400){
+                        setPageNotify({message: "Face ID verification failed"})
+                    }
+                    if (err.response.status === 403) {
+                        navigate('/auth/login/?redirect=/elections/' + election_id + "/")
+                    } else if (err.response.status === 404) {
+                        navigate("/404")
+                    }
+                    console.log(err)
+                }
+            }
+
+            submitVote()
+        }
+
+    }, [])
 
 
     return (
