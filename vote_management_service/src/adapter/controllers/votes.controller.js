@@ -12,15 +12,18 @@ module.exports = class VotesController {
 
         try {
 
-            const { election_id, candidates } = req.body
+            const { election_id, candidates, face_reco_token} = req.body
 
+            if(!face_reco_token){
+                return res.status(400).json({message: "Face recogintion token required"})
+            }
             if (!election_id || !candidates) {
                 return res.status(400).json({
                     message: "election_id and candidates required in body"
                 })
             }
 
-            const resp = await this.votesUseCase.publishVote({ election_id, candidates, headers: req.headers, user_id: req.user_id })
+            const resp = await this.votesUseCase.publishVote({ election_id, candidates, headers: req.headers, user_id: req.user_id , face_reco_token})
 
             return res.send(resp)
 
@@ -35,7 +38,7 @@ module.exports = class VotesController {
             }
 
             if (err.name == "VOTE_CASE_ERROR") {
-                return res.status(err.status).json({
+                return res.status(500).json({
                     message: err.message
                 })
             }

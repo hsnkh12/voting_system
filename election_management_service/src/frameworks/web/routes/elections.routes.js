@@ -1,6 +1,6 @@
 var express = require('express')
 var router = express.Router()
-const { verifyTokenMiddleware, verifyUserMiddleware, verifyAdminMiddleware} = require("../../../adapter/middlewares/auth.middleware")
+const { verifyTokenMiddleware, verifyUserMiddleware, verifyAdminMiddleware, verifyFaceIDMiddleware} = require("../../../adapter/middlewares/auth.middleware")
 const ElectionsController = require("../../../adapter/controllers/elections.controller")
 const ElectionsUseCase = require("../../../use-cases/elections.case")
 const ElectionsRepository = require("../../db/data-services/elections.repo")
@@ -26,6 +26,7 @@ router.post("/",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
+verifyFaceIDMiddleware,
 electionsController.createElection)
 
 // Start election: admin
@@ -33,6 +34,7 @@ router.post("/start/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
+verifyFaceIDMiddleware,
 electionsController.startElection)
 
 // End election: admin
@@ -40,6 +42,7 @@ router.post("/end/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
+verifyFaceIDMiddleware,
 electionsController.endElection)
 
 
@@ -48,6 +51,7 @@ router.post("/candidates/add/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
+verifyFaceIDMiddleware,
 electionsToCandsController.addCandidate
 )
 
@@ -57,6 +61,7 @@ router.post("/candidates/remove/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
+verifyFaceIDMiddleware,
 electionsToCandsController.removeCandidate
 )
 
@@ -65,29 +70,34 @@ electionsToCandsController.removeCandidate
 router.get("/",
 verifyTokenMiddleware,
 verifyUserMiddleware,
+verifyFaceIDMiddleware,
 electionsController.getAllElections)
 
 router.get("/candidate-involved/:candidate_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
+verifyFaceIDMiddleware,
 electionsToCandsController.getInvolvedElections
 )
 // Read one election: admin, user
 router.get("/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
+verifyFaceIDMiddleware,
 electionsController.getOneElectionById)
 
 // Read all candidates in an election: admin, user
 router.get("/candidates/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
+verifyFaceIDMiddleware,
 electionsToCandsController.getAllCandidates)
 
 // Read one election: admin, user
 router.get("/title/:title",
 verifyTokenMiddleware,
 verifyUserMiddleware,
+verifyFaceIDMiddleware,
 electionsController.getOneElectionByTitle)
 
 
@@ -96,6 +106,7 @@ router.put("/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
+verifyFaceIDMiddleware,
 electionsController.updateElection)
 
 
@@ -104,12 +115,14 @@ router.delete("/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
+verifyFaceIDMiddleware,
 electionsController.destroyElection)
 
 
 router.post("/init-vote-request",
 verifyTokenMiddleware,
 verifyUserMiddleware,
+verifyFaceIDMiddleware,
 electionsToCandsController.initVote)
 
 

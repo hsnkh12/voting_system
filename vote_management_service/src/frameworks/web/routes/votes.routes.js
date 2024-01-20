@@ -3,7 +3,7 @@ var router = express.Router()
 
 const { verifyTokenMiddleware,
     verifyUserMiddleware,
-    verifyAdminMiddleware,} = 
+    verifyAdminMiddleware,verifyFaceIDMiddleware} = 
 require("../../../adapter/middlewares/auth.middleware")
 
 const VotesController = require("../../../adapter/controllers/votes.controller")
@@ -24,6 +24,7 @@ const votesController = new VotesController(votesUseCase)
 router.post("/submit/", 
 verifyTokenMiddleware,
 verifyUserMiddleware,
+verifyFaceIDMiddleware,
 votesController.submitVote
 )
 
@@ -33,6 +34,7 @@ router.get("/election/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
+verifyFaceIDMiddleware,
 votesController.getAllVoteToCandidate
 )
 
@@ -41,6 +43,7 @@ router.get("/submissions/:vote_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
+verifyFaceIDMiddleware,
 votesController.getOneVote
 )
 
@@ -49,12 +52,14 @@ router.get("/submissions/election/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
+verifyFaceIDMiddleware,
 votesController.getAllVotes
 )
 
 router.get('/check-user-vote/:election_id',
 verifyTokenMiddleware,
 verifyUserMiddleware,
+verifyFaceIDMiddleware,
 votesController.userVotedForElection)
 
 

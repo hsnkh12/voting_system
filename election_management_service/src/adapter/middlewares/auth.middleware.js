@@ -44,7 +44,7 @@ function verifyUserMiddleware(req, res, next) {
 
 function verifyFaceIDMiddleware(req, res, next ) {
 
-   if(!req.face_id) {
+   if(!req.face_id_verified) {
     return res.status(403).json({message: "User must verify face ID"})
    }
    next()

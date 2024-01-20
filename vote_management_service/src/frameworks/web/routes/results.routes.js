@@ -2,7 +2,7 @@ var express = require('express')
 var router = express.Router()
 const { verifyTokenMiddleware,
     verifyUserMiddleware,
-    verifyAdminMiddleware,} = 
+    verifyAdminMiddleware,verifyFaceIDMiddleware} = 
 require("../../../adapter/middlewares/auth.middleware")
 
 const ResultsController = require("../../../adapter/controllers/results.controller")
@@ -22,12 +22,14 @@ router.post("/election/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
 verifyAdminMiddleware,
+verifyFaceIDMiddleware,
 resultsController.generateResult)
 
 // Get one result. user, admin 
 router.get("/election/:election_id",
 verifyTokenMiddleware,
 verifyUserMiddleware,
+verifyFaceIDMiddleware,
 resultsController.getOneResult)
 
 

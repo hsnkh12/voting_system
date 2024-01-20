@@ -41,14 +41,14 @@ module.exports = class SMSUseCase {
         const client = new twilio(accountSid, authToken);
 
         // Replace 'to', 'from', and 'body' with the recipient's number, your Twilio number, and the message body
-        client.messages
-            .create({
-                to: '+905338305623',
-                from: twilioPhoneNumber,
-                body: 'Hello from cypevote! your code is: '+code.toString(),
-            })
-            .then((message) => cconsole.log(code))
-            .catch((error) => console.error(`Error sending SMS: ${error.message}`));
+        // client.messages
+        //     .create({
+        //         to: '+905338305623',
+        //         from: twilioPhoneNumber,
+        //         body: 'Hello from cypevote! your code is: '+code.toString(),
+        //     })
+        //     .then((message) => console.log(code))
+        //     .catch((error) => console.error(`Error sending SMS: ${error.message}`));
 
 
         console.log(code);
