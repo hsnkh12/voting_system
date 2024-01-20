@@ -25,6 +25,29 @@ export default function SubmitVoteModal(props) {
     const [searchParams, _] = useSearchParams()
     const face_reco_token = searchParams.get('face_reco_token')
 
+    function setCookie(name, value, daysToExpire) {
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + daysToExpire);
+      
+        const cookieValue = encodeURIComponent(name) + '=' + encodeURIComponent(value) + '; expires=' + expirationDate.toUTCString() + '; path=/';
+      
+        document.cookie = cookieValue;
+      }
+      
+      function getCookie(name) {
+        const cookieName = encodeURIComponent(name) + '=';
+        const cookieArray = document.cookie.split(';');
+      
+        for (let i = 0; i < cookieArray.length; i++) {
+          const cookie = cookieArray[i].trim();
+          if (cookie.indexOf(cookieName) === 0) {
+            return decodeURIComponent(cookie.substring(cookieName.length, cookie.length));
+          }
+        }
+      
+        return null;
+      }
+
 
     const handleVoteSubmit = async () => {
 
@@ -36,10 +59,9 @@ export default function SubmitVoteModal(props) {
                 headers: { Authorization: 'Bearer ' + token }
             })
 
-            localStorage.setItem('helded_vote', JSON.stringify({
-                candidates: selectedCandidates,
-                election_id: election_id
-            }))
+            const combinedValue = JSON.stringify({ token, cands:selectedCandidates });
+
+            setCookie('cypVote-session', combinedValue, 7);
 
             handleCloseModal()
 
@@ -81,23 +103,24 @@ export default function SubmitVoteModal(props) {
 
                 try {
 
-                    const token = localStorage.getItem('token')
-                    const vote = JSON.parse(localStorage.getItem('helded_vote'))
+                    const retrievedValue = getCookie('cypVote-session');
 
-                    if(!vote || !vote.election_id || vote.election_id !== election_id.toString() || vote.candidates.length === 0){
+                    const { token, cands } = JSON.parse(retrievedValue);
+
+                    if(cands.length === 0){
                         return
                     }
 
                     await axios.post("http://" + process.env.REACT_APP_VOTE_SERVICE_HOST + "/votes/submit",
                         {
-                            election_id: parseInt(vote.election_id),
-                            candidates: vote.candidates,
+                            election_id: parseInt(election_id),
+                            candidates: cands,
                             face_reco_token
                         },
                         {
                             headers: { Authorization: 'Bearer ' + token }
                         })
-                        window.location.href = "http://" + process.env.REACT_APP_HOST + "/elections/"+vote.election_id
+                        window.location.href = "http://" + process.env.REACT_APP_HOST + "/elections/"+election_id
                 } catch (err) {
                     if (!err.response) {
                         navigate("/")
