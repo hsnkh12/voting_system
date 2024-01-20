@@ -38,8 +38,8 @@ export default function ElectionFilter(props) {
                 type="text"
                 variant="outlined"
                 style={{ backgroundColor: 'white', borderRadius: 5 }}
-                name="election_title"
-                value={formValues.election_title}
+                name="title"
+                value={formValues.title}
                 onChange={handleFormChange}
                 fullWidth
               />
