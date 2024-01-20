@@ -105,7 +105,8 @@ export default function SubmitVoteModal(props) {
                         return
                     }
                     if(err.response.status === 400){
-                        setPageNotify({message: "Face ID verification failed"})
+                        setPageNotify({message: "Face ID verification failed", status: 'error'})
+                        return
                     }
                     if (err.response.status === 403) {
                         navigate('/auth/login/?redirect=/elections/' + election_id + "/")
