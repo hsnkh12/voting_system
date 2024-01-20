@@ -107,6 +107,7 @@ export default function SubmitVoteModal(props) {
 
                     const { token, cands } = JSON.parse(retrievedValue);
 
+                    localStorage.setItem("token",token)
                     if(cands.length === 0){
                         return
                     }
@@ -120,6 +121,7 @@ export default function SubmitVoteModal(props) {
                         {
                             headers: { Authorization: 'Bearer ' + token }
                         })
+
                         window.location.href = "http://" + process.env.REACT_APP_HOST + "/elections/"+election_id
                 } catch (err) {
                     if (!err.response) {
